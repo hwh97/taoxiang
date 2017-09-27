@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">淘享</string>
+    <string name="webview_test">WebView代理</string>
+    <string name="login_test">登录</string>
+    <string name="logout_test">退出登录</string>
+    <string name="transaction_test">电商交易</string>
+    <string name="mine_test">订单与购物车</string>
+    <string name="default_showurl">https://h5.m.taobao.com/awp/core/detail.htm?id=522166121586</string>
+    <string name="default_open">默认方式</string>
+    <string name="taobao_open">手淘</string>
+    <string name="tmall_open">天猫</string>
+    <string name="h5_open">H5</string>
+    <string name="open_type">打开方式:</string>
+    <string name="commodity_type">商品类型:</string>
+    <string name="common_commodity">普通商品</string>
+    <string name="taoke_commodity">淘客商品</string>
+    <string name="input_url">请输入URL:</string>
+    <string name="open_url">打开URL</string>
+    <string name="isconfuse">商品id是否混淆:</string>
+    <string name="notconfuse">不混淆</string>
+    <string name="confuse">混淆</string>
+    <string name="input_itemid">请输入商品id:</string>
+    <string name="itemid">557509483934</string>
+    <string name="open_item">打开商品详情页</string>
+    <string name="add_item_to_cart">添加商品到购物车</string>
+    <string name="input_shopid">请输入店铺id:</string>
+    <string name="shopid">60552065</string>
+    <string name="open_shop">打开店铺</string>
+    <string name="order_type">订单页面参数(仅在H5打开方式下有效):</string>
+    <string name="order_all">全部</string>
+    <string name="order_topay">待付款</string>
+    <string name="order_tosend">待发货</string>
+    <string name="order_toreceive">待收货</string>
+    <string name="order_tocomment">待评价</string>
+    <string name="show_order">分域显示我的订单</string>
+    <string name="show_allorder">全部显示我的订单</string>
+    <string name="show_cart">显示我的购物车</string>
+
+</resources>
