@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="180dp"
+    android:background="@drawable/header_bg"
+    android:paddingLeft="8dp"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.kingja.magicmirror.MagicMirrorView
+            android:id="@+id/headPic"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            app:srcCompat="@drawable/headpic"
+            android:paddingTop="@dimen/nav_header_vertical_spacing"
+            app:mirrorShape="circle"
+            app:mirrorBorderWidth="0.5dp"
+            app:mirrorBorderColor="#bfbfbf"
+            app:mirrorCorner="10dp"/>
+
+        <TextView
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/headPic"
+            android:paddingStart="10dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:id="@+id/login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="用户登陆" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/welcome"
+        android:paddingTop="@dimen/nav_header_vertical_spacing"
+        android:paddingBottom="6dp"
+        android:layout_alignParentStart="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="欢迎您,亲爱的游客"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+
+
+</LinearLayout>

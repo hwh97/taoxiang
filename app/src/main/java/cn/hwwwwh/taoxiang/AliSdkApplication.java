@@ -7,11 +7,8 @@ import android.widget.Toast;
 import com.alibaba.baichuan.android.trade.AlibcTradeSDK;
 import com.alibaba.baichuan.android.trade.callback.AlibcTradeInitCallback;
 
-import com.alibaba.baichuan.trade.common.adapter.ut.AlibcUserTracker;
-import com.ut.mini.internal.UTTeamWork;
+import cn.hwwwwh.taoxiang.dagger.PresenterComponent;
 
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 阿里百川电商
@@ -24,6 +21,7 @@ import java.util.Map;
 public class AliSdkApplication extends Application {
 
     public static AliSdkApplication application = null;
+    public static PresenterComponent presenterComponent;
 
     @Override
     public void onCreate() {
@@ -36,7 +34,6 @@ public class AliSdkApplication extends Application {
             @Override
             public void onSuccess() {
                 Toast.makeText(AliSdkApplication.this, "初始化成功", Toast.LENGTH_SHORT).show();
-
             }
 
             @Override
@@ -45,5 +42,27 @@ public class AliSdkApplication extends Application {
             }
         });
 
+
+    }
+    public static synchronized AliSdkApplication getInstance() {
+        return application;
+    }
+
+    public static PresenterComponent getPresenterComponent() {
+
+        /*
+            1. 在Application层对注入器进行初始化
+              DaggerAppComponent是dagger2编译阶段生成的类，用于生成注入器Component的实例，如果没有的话，ReBuild一下
+                -builder()  创建构造器
+                -appModule()    传入本次生成依赖需要的模型
+                -build()    创建Component的实例
+         */
+//        if (presenterComponent == null) {
+//            presenterComponent = DaggerPresenterComponent.builder()
+//                    .presenterModule(new PresenterModule())
+//                    .build();
+//            presenterComponent = DaggerPresenterComponent.create();   // 作用同上
+//        }
+        return presenterComponent;
     }
 }

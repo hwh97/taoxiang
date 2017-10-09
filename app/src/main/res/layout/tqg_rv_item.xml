@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/pic"
+        android:src="@drawable/loadpic"
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:scaleType="fitXY" />
+
+    <TextView
+        android:id="@+id/D_title"
+        android:text="苏泊尔保温杯 男女士304不锈钢真空水杯学生直身便携大容量茶杯子"
+        android:layout_marginStart="3dp"
+        android:layout_below="@+id/pic"
+        android:maxLines="1"
+        android:textColor="@color/black"
+        android:ellipsize="end"
+        android:textSize="14sp"
+        android:paddingLeft="1dp"
+        android:paddingRight="1dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:allowUndo="false" />
+
+    <LinearLayout
+        android:layout_marginStart="3dp"
+        android:layout_below="@+id/D_title"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+        <RelativeLayout
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+
+            <cn.hwwwwh.taoxiang.CoustomView.CustomProgressBar
+                android:id="@+id/customProgressBar"
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:layout_marginTop="10dp"
+                app:progressDescColor="@color/crimson"
+                app:progress="14500"
+                app:max="15000"
+                app:progressRadius="8dp"
+                app:progressDesc="已售"
+                app:isShowDesc="true"/>
+            <RelativeLayout
+                android:layout_below="@+id/customProgressBar"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:paddingBottom="2dp"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp">
+
+                <TextView
+                    android:id="@+id/Price"
+                    android:text="￥39"
+                    android:gravity="bottom"
+                    android:textStyle="bold"
+                    android:textColor="@color/red"
+                    android:textSize="16sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true" />
+
+                <TextView
+                    android:id="@+id/Org_Price"
+                    android:gravity="bottom"
+                    android:text="￥49"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginBottom="1dp"
+                    android:textColor="@color/darkgray"
+                    android:layout_toEndOf="@+id/Price"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <!--<TextView-->
+                <!--android:layout_centerVertical="true"-->
+                <!--android:background="@drawable/gobuy_bg"-->
+                <!--android:layout_centerInParent="true"-->
+                <!--android:text="库存紧张"-->
+                <!--android:textSize="10sp"-->
+                <!--android:textStyle="bold"-->
+                <!--android:textColor="@color/white"-->
+                <!--android:layout_width="80dp"-->
+                <!--android:layout_height="40dp" />-->
+            <!--<TextView-->
+                <!--android:id="@+id/gobuy"-->
+                <!--android:gravity="center_vertical"-->
+                <!--android:text="去购买"-->
+                <!--android:background="@drawable/gobuy_bg"-->
+                <!--android:textColor="@color/darkgray"-->
+                <!--android:layout_centerVertical="true"-->
+                <!--android:layout_alignParentEnd="true"-->
+                <!--android:padding="10dp"-->
+                <!--android:layout_marginEnd="2dp"-->
+                <!--android:textSize="12sp"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content" />-->
+        </RelativeLayout>
+    </LinearLayout>
+</RelativeLayout>

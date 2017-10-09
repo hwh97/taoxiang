@@ -1,0 +1,66 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <cn.hwwwwh.taoxiang.CoustomView.PriceEditText
+            android:id="@+id/lp"
+            android:digits="0123456789."
+            android:background="@drawable/edit_bg"
+            android:layout_weight="3"
+            android:maxLines="1"
+            android:inputType="number"
+            android:gravity="center"
+            android:maxLength="7"
+            android:textColor="@color/black"
+            android:layout_margin="10dp"
+            android:layout_height="30dp"
+            android:textSize="14sp"
+            android:hint="最低价"
+            android:layout_width="0dp"
+            />
+
+        <TextView
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:text="—"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <cn.hwwwwh.taoxiang.CoustomView.PriceEditText
+            android:id="@+id/mp"
+            android:layout_weight="3"
+            android:maxLines="1"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:background="@drawable/edit_bg"
+            android:inputType="number"
+            android:maxLength="7"
+            android:hint="最高价"
+            android:textSize="14sp"
+            android:digits="0123456789."
+            android:layout_width="0dp"
+            android:layout_margin="10dp"
+            android:layout_height="30dp" />
+
+        <Button
+            android:id="@+id/btn"
+            android:background="@drawable/gobuy_bg"
+            android:text="确认"
+            android:textColor="@color/white"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

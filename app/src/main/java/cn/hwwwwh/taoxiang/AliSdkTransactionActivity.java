@@ -55,11 +55,14 @@ public class AliSdkTransactionActivity extends AppCompatActivity {
         setTitle(getResources().getString(R.string.transaction_test));
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        alibcShowParams = new AlibcShowParams(OpenType.Auto, false);
-        exParams = new HashMap<>();
-        exParams.put("isv_code", "appisvcode");
-        exParams.put("alibaba", "阿里巴巴");//自定义参数部分，可任意增删改
 
+        alibcTaokeParams = new AlibcTaokeParams(); // 若非淘客taokeParams设置为null即可
+        alibcTaokeParams.adzoneid = "136690366";
+        alibcTaokeParams.pid = "mm_56584098_37534934_136690366";
+       // alibcTaokeParams.subPid = "mm_56584098_37534934_136690366";
+        alibcTaokeParams.extraParams = new HashMap<>();
+        alibcTaokeParams.extraParams.put("taokeAppkey","24642765");
+        alibcShowParams = new AlibcShowParams(OpenType.Auto, false);
         initView();
 
     }
@@ -82,18 +85,6 @@ public class AliSdkTransactionActivity extends AppCompatActivity {
                     Toast.LENGTH_SHORT).show();
             return;
         };
-
-        if (isTaoke) {
-            alibcTaokeParams = new AlibcTaokeParams(); // 若非淘客taokeParams设置为null即可
-            alibcTaokeParams.adzoneid = "132108885";
-            alibcTaokeParams.pid = "mm_56584098_24812979_132108885";
-            alibcTaokeParams.subPid = "mm_56584098_24812979_132108885";
-            alibcTaokeParams.extraParams = new HashMap<>();
-            alibcTaokeParams.extraParams.put("taokeAppkey","24640218");
-        } else {
-            alibcTaokeParams = null;
-        }
-
         AlibcTrade.show(this, new AlibcPage(text), alibcShowParams, null, exParams , new DemoTradeCallback());
     }
 
@@ -110,20 +101,9 @@ public class AliSdkTransactionActivity extends AppCompatActivity {
             alibcBasePage = new AlibcDetailPage(itemId.trim());
         }
 
-
-        if (isTaoke) {
-            alibcTaokeParams = new AlibcTaokeParams(); // 若非淘客taokeParams设置为null即可
-            alibcTaokeParams.adzoneid = "132108885";
-            alibcTaokeParams.pid = "mm_56584098_24812979_132108885";
-            alibcTaokeParams.subPid = "mm_56584098_24812979_132108885";
-            alibcTaokeParams.extraParams = new HashMap<>();
-            alibcTaokeParams.extraParams.put("taokeAppkey","24640218");
-        } else {
-            alibcTaokeParams = null;
-        }
-
         AlibcTrade.show(this, alibcBasePage, alibcShowParams, alibcTaokeParams, exParams , new DemoTradeCallback());
     }
+
 
     /**
      * @param view
@@ -137,15 +117,6 @@ public class AliSdkTransactionActivity extends AppCompatActivity {
             alibcBasePage = new AlibcAddCartPage(etItemId.getText().toString());
         } else {
             alibcBasePage = new AlibcAddCartPage(itemId.trim());
-        }
-
-        if (isTaoke) {
-            alibcTaokeParams = new AlibcTaokeParams(); // 若非淘客taokeParams设置为null即可
-            alibcTaokeParams.adzoneid = "132108885";
-            alibcTaokeParams.pid = "mm_56584098_24812979_132108885";
-            alibcTaokeParams.subPid = "mm_56584098_24812979_132108885";
-        } else {
-            alibcTaokeParams = null;
         }
 
         AlibcTrade.show(this, alibcBasePage, alibcShowParams, alibcTaokeParams, exParams , new DemoTradeCallback());

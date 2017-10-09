@@ -35,5 +35,11 @@
     <string name="show_order">分域显示我的订单</string>
     <string name="show_allorder">全部显示我的订单</string>
     <string name="show_cart">显示我的购物车</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 
 </resources>
