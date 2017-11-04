@@ -2,12 +2,11 @@ package cn.hwwwwh.taoxiang.dagger.module;
 
 import javax.inject.Singleton;
 
-import cn.hwwwwh.taoxiang.presenter.DownloadCryPre;
-import cn.hwwwwh.taoxiang.presenter.DownloadTqgDataPre;
+import cn.hwwwwh.taoxiang.presenter.DownloadQuanCryPre;
+import cn.hwwwwh.taoxiang.presenter.DownloadQuanDataPre;
 import cn.hwwwwh.taoxiang.presenter.DownloadTqgTmrDataPre;
 import cn.hwwwwh.taoxiang.view.activity.MainActivity;
 import cn.hwwwwh.taoxiang.view.activity.TmrActivity;
-import cn.hwwwwh.taoxiang.view.iface.IMainCryVIew;
 import dagger.Module;
 import dagger.Provides;
 
@@ -18,13 +17,13 @@ import dagger.Provides;
 @Module
 public class PresenterModule  {
 
-    DownloadCryPre downloadCryPre;
-    DownloadTqgDataPre downloadTqgDataPre;
+    DownloadQuanCryPre downloadQuanCryPre;
+    DownloadQuanDataPre downloadQuanDataPre;
     DownloadTqgTmrDataPre downloadTqgTmrDataPre;
 
     public PresenterModule(MainActivity activity) {
-        downloadCryPre=new DownloadCryPre(activity,activity);
-        downloadTqgDataPre=new DownloadTqgDataPre(activity,activity);
+        downloadQuanCryPre =new DownloadQuanCryPre(activity,activity);
+        downloadQuanDataPre =new DownloadQuanDataPre(activity,activity);
     }
 
     public PresenterModule(TmrActivity tmrActivity){
@@ -34,14 +33,14 @@ public class PresenterModule  {
     /* Provides 对外提供依赖对象*/
     @Singleton
     @Provides
-    public DownloadCryPre downloadCryPre(){
-        return  downloadCryPre;
+    public DownloadQuanCryPre downloadCryPre(){
+        return downloadQuanCryPre;
     }
 
     @Singleton
     @Provides
-    public DownloadTqgDataPre downloadTqgDataPre(){
-        return  downloadTqgDataPre;
+    public DownloadQuanDataPre downloadTqgDataPre(){
+        return downloadQuanDataPre;
     }
 
     @Singleton

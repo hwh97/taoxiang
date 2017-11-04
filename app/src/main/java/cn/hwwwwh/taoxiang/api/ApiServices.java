@@ -1,5 +1,7 @@
 package cn.hwwwwh.taoxiang.api;
 
+import cn.hwwwwh.taoxiang.model.bean.QuanBean;
+import cn.hwwwwh.taoxiang.model.bean.QuanCryBean;
 import cn.hwwwwh.taoxiang.model.bean.TodayCry;
 import cn.hwwwwh.taoxiang.model.bean.TqgTmrData;
 import cn.hwwwwh.taoxiang.model.bean.TqgTodayData;
@@ -26,4 +28,12 @@ public interface ApiServices {
 
     @GET("update.json")
     Observable<UpdateBean> getUpdateInfo();
+
+    @GET("QuanCryApi.php")
+    Observable<QuanCryBean> getQuanCryData(@Query("method") String method);
+
+    @GET("QuanApi.php")
+    Observable<QuanBean> getQuanData(@Query("type") String type, @Query("page") int page
+            , @Query("category") String category, @Query("lp") double lp, @Query("mp") Double mp, @Query("keyword") String keyword);
+
 }

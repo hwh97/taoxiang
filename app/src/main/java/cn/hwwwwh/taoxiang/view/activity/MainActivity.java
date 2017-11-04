@@ -1,7 +1,9 @@
 package cn.hwwwwh.taoxiang.view.activity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -13,11 +15,12 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,20 +64,20 @@ import cn.hwwwwh.taoxiang.CoustomView.SpacesItemDecoration;
 import cn.hwwwwh.taoxiang.CoustomView.dorpmenu.MyDropDownMenu;
 import cn.hwwwwh.taoxiang.DemoTradeCallback;
 import cn.hwwwwh.taoxiang.R;
-import cn.hwwwwh.taoxiang.adapter.TqgTodayAdapter;
+import cn.hwwwwh.taoxiang.adapter.QuanAdapter;
 import cn.hwwwwh.taoxiang.api.ApiUrls;
 import cn.hwwwwh.taoxiang.api.ApiUtils;
 import cn.hwwwwh.taoxiang.base.BaseActivity;
 import cn.hwwwwh.taoxiang.dagger.DaggerPresenterComponent;
 import cn.hwwwwh.taoxiang.dagger.module.PresenterModule;
-import cn.hwwwwh.taoxiang.model.bean.TodayCry;
-import cn.hwwwwh.taoxiang.model.bean.TqgTodayData;
+import cn.hwwwwh.taoxiang.model.bean.QuanBean;
+import cn.hwwwwh.taoxiang.model.bean.QuanCryBean;
 import cn.hwwwwh.taoxiang.model.bean.UpdateBean;
-import cn.hwwwwh.taoxiang.presenter.DownloadCryPre;
-import cn.hwwwwh.taoxiang.presenter.DownloadTqgDataPre;
+import cn.hwwwwh.taoxiang.presenter.DownloadQuanCryPre;
+import cn.hwwwwh.taoxiang.presenter.DownloadQuanDataPre;
 import cn.hwwwwh.taoxiang.utils.ToastUtils;
-import cn.hwwwwh.taoxiang.view.iface.IMainCryVIew;
-import cn.hwwwwh.taoxiang.view.iface.IMainTqgDataView;
+import cn.hwwwwh.taoxiang.view.iface.IMainQuanCryVIew;
+import cn.hwwwwh.taoxiang.view.iface.IMainQuanDataView;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -84,11 +87,8 @@ import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.qiangxi.checkupdatelibrary.dialog.ForceUpdateDialog.FORCE_UPDATE_DIALOG_PERMISSION_REQUEST_CODE;
-import static com.qiangxi.checkupdatelibrary.dialog.UpdateDialog.UPDATE_DIALOG_PERMISSION_REQUEST_CODE;
 
-
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, IMainCryVIew, IMainTqgDataView ,View.OnClickListener{
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, IMainQuanCryVIew, IMainQuanDataView,View.OnClickListener{
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -104,11 +104,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     boolean isPermissionGrant;// 程序是否被允许持有写入权限
 
     @Inject
-    public DownloadCryPre downloadCryPre;
+    public DownloadQuanCryPre downloadQuanCryPre;
     @Inject
-    public DownloadTqgDataPre downloadTqgDataPre;
+    public DownloadQuanDataPre downloadQuanDataPre;
 
-    TqgTodayAdapter adapter;
+    QuanAdapter adapter;
     ArrayList<String> mDatas;
     View contentView;
     RecyclerView recyclerView;
@@ -138,6 +138,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private AlibcShowParams alibcShowParams;//页面打开方式，默认，H5，Native
     private AlibcTaokeParams alibcTaokeParams = null;//淘客参数，包括pid，unionid，subPid
     private Map<String, String> exParams;//yhhpass参数
+    private String shareText="最新版淘享下载地址:http://taoxiang.hwwwwh.cn/taoxiang.apk";
 
 
     @Override
@@ -148,6 +149,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void init() {
         toolbar.setTitle("");
+        toolbar.setTitleTextAppearance(this,R.style.ToolbarTitle);
         setSupportActionBar(toolbar);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -158,6 +160,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         navView = (NavigationView) findViewById(R.id.nav_view);
         navView.setNavigationItemSelectedListener(this);
+        loadUpdate();
 
         contentView = getLayoutInflater().inflate(R.layout.contentview, null);
 
@@ -208,8 +211,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         headPic.setOnClickListener(this);
 
         initRecycleView();
-        downloadTqgData();
         refreshLayout = (SmartRefreshLayout) findViewById(R.id.refreshLayout);
+        downloadTqgData();
+
         //设置 Header 为 Material风格
         refreshLayout.setRefreshHeader(new WaterDropHeader(this));
         //refreshLayout.setRefreshHeader(new FunGameHitBlockHeader(this));
@@ -235,20 +239,68 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     protected void initBundleData() {
+    }
 
+    private void loadUpdate(){
+        ApiUtils.getTqgApi(ApiUrls.tqgApiUrl)
+                .getUpdateInfo()
+                .unsubscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<UpdateBean>() {
+                    Disposable d;
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        this.d =d;
+                    }
+
+                    @Override
+                    public void onNext(@NonNull UpdateBean updateBean) {
+                        if (getVersionCode(getApplicationContext())<updateBean.getUpdate_ver_code()) {
+                            LinearLayout gallery = (LinearLayout) navView.getMenu().findItem(R.id.nav_update).getActionView();
+                            gallery.setVisibility(View.VISIBLE);
+                        }
+                        if(!updateBean.getShare_text().isEmpty()) {
+                            shareText = updateBean.getShare_text();
+                        }
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        onComplete();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        d.dispose();
+                    }
+                });
+    }
+
+    public int getVersionCode(Context context){
+        PackageManager packageManager=context.getPackageManager();
+        PackageInfo packageInfo;
+        int versionCode = 0;
+        try {
+            packageInfo=packageManager.getPackageInfo(context.getPackageName(),0);
+            versionCode=packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return versionCode;
     }
 
     private void initRecycleView() {
-        adapter = new TqgTodayAdapter(this);
-        adapter.setOnItemClickListener(new TqgTodayAdapter.OnItemClickListener() {
+        adapter = new QuanAdapter(this);
+        adapter.setOnItemClickListener(new QuanAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position, String url) {
-                showUrl(url);
+            public void onItemClick(View view, int position, String couponLink,String id) {
+                showUrl(couponLink,id);
             }
 
             @Override
             public void OnItemLongClick(View view, int position) {
-                ToastUtils.showToast(MainActivity.this,"ss");
+                //ToastUtils.showToast(MainActivity.this,"ss");
             }
         });
         //必须指定adaoter
@@ -256,26 +308,33 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //必须指定layoutmanager
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false));
         //设置item之间的间隔
-        SpacesItemDecoration decoration = new SpacesItemDecoration(10);
+        SpacesItemDecoration decoration = new SpacesItemDecoration(4);
         recyclerView.addItemDecoration(decoration);
 
     }
 
-    public void showUrl(String url) {
-        alibcTaokeParams = new AlibcTaokeParams(); // 若非淘客taokeParams设置为null即可
+    public void showUrl(String couponLink,String id) {
+
+       /* alibcTaokeParams = new AlibcTaokeParams(); // 若非淘客taokeParams设置为null即可
         alibcTaokeParams.adzoneid = "136690366";
         alibcTaokeParams.pid = "mm_56584098_37534934_136690366";
         // alibcTaokeParams.subPid = "mm_56584098_37534934_136690366";
         alibcTaokeParams.extraParams = new HashMap<>();
         alibcTaokeParams.extraParams.put("taokeAppkey", "24642765");
-        alibcShowParams = new AlibcShowParams(OpenType.Auto, false);
+        alibcShowParams = new AlibcShowParams(OpenType.H5, false);
         if (TextUtils.isEmpty(url)) {
             Toast.makeText(MainActivity.this, "URL为空",
                     Toast.LENGTH_SHORT).show();
             return;
         }
-        ;
-        AlibcTrade.show(this, new AlibcPage(url), alibcShowParams, alibcTaokeParams, exParams, new DemoTradeCallback());
+        AlibcTrade.show(this, new AlibcPage(url), alibcShowParams, alibcTaokeParams, exParams, new DemoTradeCallback());*/
+
+        Intent intent=new Intent(MainActivity.this,AliSdkWebViewProxyActivity.class);
+        Bundle bundle=new Bundle();
+        bundle.putString("CouponLink",couponLink);
+        bundle.putString("GoodID",id);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     private String dealCryText(String text) {
@@ -343,6 +402,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     @Override
                     public void accept(Object o) throws Exception {
 //                        mDropDownMenu.setTabText(2,"自定义");//设置tab标签文字
+                        hintKbTwo();
                         page = 1;
                         lp = lpEdt.getDoublePrice();
                         mp = mpEdt.getDoublePrice();
@@ -354,11 +414,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         }
                         downloadTqgData();
                         dropDownMenu.closeMenu();//关闭menu
-
                     }
                 });
 
         return v;
+    }
+
+    private void hintKbTwo() {
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(imm.isActive()&&getCurrentFocus()!=null){
+            if (getCurrentFocus().getWindowToken()!=null) {
+                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+        }
     }
 
     public boolean isCharValid(CharSequence lp, CharSequence mp) {
@@ -380,18 +448,54 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 page = 1;
                 ((MainActivity) searchFragment.getActivity()).keyword = keyword;
                 downloadTqgData();
+                if(!keyword.equals("")){
+                    toolbar.setTitle("“"+keyword+"“搜索结果");
+                }else{
+                    toolbar.setTitle("");
+                }
+
             }
         });
         searchFragment.show(getSupportFragmentManager(), SearchFragment.TAG);
     }
 
     public void downloadTqgData() {
-        downloadTqgDataPre.downloadTqgTodayData(type, page, category, lp, mp, keyword);
+        refreshLayout.autoRefresh();
+        downloadQuanDataPre.downloadTqgTodayData(type, page, category, lp, mp, keyword);
     }
 
     public void downloadTqgCryData() {
-        downloadCryPre.loadCry(category);
+        downloadQuanCryPre.loadCry(category);
     }
+
+    /**
+     * setForce(true);
+     * 强制更新,checkupdatelibrary中提供的默认强制更新Dialog,您完全可以自定义自己的Dialog,
+     */
+    public void forceUpdateDialogClick(boolean isForce ) {
+        mForceUpdateDialog = new ForceUpdateDialog(MainActivity.this);
+        mForceUpdateDialog.setForce(isForce);
+        mForceUpdateDialog.setAppSize(mCheckUpdateInfo.getNewAppSize())
+                .setDownloadUrl(mCheckUpdateInfo.getNewAppUrl())
+                .setTitle(mCheckUpdateInfo.getAppName() + "有更新啦")
+                .setReleaseTime(mCheckUpdateInfo.getNewAppReleaseTime())
+                .setVersionName(mCheckUpdateInfo.getNewAppVersionName())
+                .setUpdateDesc(mCheckUpdateInfo.getNewAppUpdateDesc())
+                .setFileName("taoxiang.apk")
+                .setFilePath(Environment.getExternalStorageDirectory().getPath() + "/checkupdatelib").show();
+    }
+
+    //分享文字
+    public void shareText() {
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+        shareIntent.setType("text/plain");
+
+        //设置分享列表的标题，并且每次都显示分享列表
+        startActivity(Intent.createChooser(shareIntent, "分享到"));
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -408,6 +512,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //如果是有搜索结果就返回keyword为空的结果
         if (!TextUtils.isEmpty(keyword.trim())) {
             keyword = "";
+            toolbar.setTitle("");
+            page=1;
             downloadTqgData();
             return;
         }
@@ -434,10 +540,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             return true;
         }
 
-        if (id == R.id.action_tmr) {
+     /*   if (id == R.id.action_tmr) {
             Intent intent = new Intent(this, TmrActivity.class);
             startActivity(intent);
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -457,8 +563,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         } else if (id == R.id.nav_menu3) {
 
         } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+            shareText();
+        }else if (id == R.id.nav_send) {
             FeedbackAPI.init(this.getApplication(), "24646100","2abd1fba85bac1a05c1545a727e4523f");
             FeedbackAPI.setBackIcon(R.drawable.ic_arrow_back_black_24dp);
             FeedbackAPI.openFeedbackActivity();
@@ -477,17 +583,24 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
                         @Override
                         public void onNext(@NonNull UpdateBean updateBean) {
-                            mCheckUpdateInfo = new CheckUpdateInfo();
-                            mCheckUpdateInfo.setAppName(updateBean.getUpdate_app_name())
-                                  // .setIsForceUpdate(1)//设置是否强制更新,该方法的参数只要和服务端商定好什么数字代表强制更新即可
-                                    .setNewAppReleaseTime(updateBean.getUpdate_Time())//软件发布时间
-                                   // .setNewAppSize(12.3f)//单位为M
-                                    .setNewAppSize(Float.parseFloat(updateBean.getUpdate_app_size()))
-                                    .setNewAppUrl(updateBean.getUpdate_url())
-                                    .setNewAppVersionCode(updateBean.getUpdate_ver_code())//新app的VersionCode
-                                    .setNewAppVersionName(updateBean.getUpdate_ver_name())
-                                    .setNewAppUpdateDesc(updateBean.getUpdate_content());
-                            forceUpdateDialogClick(updateBean.isIgnore_able());
+                            if (getVersionCode(getApplicationContext())<updateBean.getUpdate_ver_code()) {
+                                LinearLayout gallery = (LinearLayout) navView.getMenu().findItem(R.id.nav_update).getActionView();
+                                gallery.setVisibility(View.VISIBLE);
+                                mCheckUpdateInfo = new CheckUpdateInfo();
+                                mCheckUpdateInfo.setAppName(updateBean.getUpdate_app_name())
+                                        // .setIsForceUpdate(1)//设置是否强制更新,该方法的参数只要和服务端商定好什么数字代表强制更新即可
+                                        .setNewAppReleaseTime(updateBean.getUpdate_Time())//软件发布时间
+                                        // .setNewAppSize(12.3f)//单位为M
+                                        .setNewAppSize(Float.parseFloat(updateBean.getUpdate_app_size()))
+                                        .setNewAppUrl(updateBean.getUpdate_url())
+                                        .setNewAppVersionCode(updateBean.getUpdate_ver_code())//新app的VersionCode
+                                        .setNewAppVersionName(updateBean.getUpdate_ver_name())
+                                        .setNewAppUpdateDesc(updateBean.getUpdate_content());
+                                forceUpdateDialogClick(updateBean.isIgnore_able());
+                            }
+                            if(!updateBean.getShare_text().isEmpty()) {
+                                shareText = updateBean.getShare_text();
+                            }
                         }
 
                         @Override
@@ -508,34 +621,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return true;
     }
 
-    /**
-     * setForce(true);
-     * 强制更新,checkupdatelibrary中提供的默认强制更新Dialog,您完全可以自定义自己的Dialog,
-     */
-    public void forceUpdateDialogClick(boolean isForce ) {
-            mForceUpdateDialog = new ForceUpdateDialog(MainActivity.this);
-            mForceUpdateDialog.setForce(isForce);
-            mForceUpdateDialog.setAppSize(mCheckUpdateInfo.getNewAppSize())
-                    .setDownloadUrl(mCheckUpdateInfo.getNewAppUrl())
-                    .setTitle(mCheckUpdateInfo.getAppName() + "有更新啦")
-                    .setReleaseTime(mCheckUpdateInfo.getNewAppReleaseTime())
-                    .setVersionName(mCheckUpdateInfo.getNewAppVersionName())
-                    .setUpdateDesc(mCheckUpdateInfo.getNewAppUpdateDesc())
-                    .setFileName("taoxiang.apk")
-                    .setFilePath(Environment.getExternalStorageDirectory().getPath() + "/checkupdatelib").show();
-    }
-
     @Override
-    public void loadCry(List<TodayCry.TqgTodayCategoryBean> tqg_today_category) {
-        constellations = new String[tqg_today_category.size() + 1];
+    public void loadCry(List<QuanCryBean.QuanCategoryBean> quanCategoryBeen) {
+        constellations = new String[quanCategoryBeen.size() + 1];
         constellations[0] = "全部类别";
         int num = 0;
-        for (int j = 1; j < tqg_today_category.size() + 1; j++) {
-            num = num + tqg_today_category.get(j - 1).getNum();
-            if (tqg_today_category.get(j - 1).getTqg_category_name().equals("")) {
-                tqg_today_category.get(j - 1).setTqg_category_name("未分类");
-            }
-            constellations[j] = tqg_today_category.get(j - 1).getTqg_category_name() + "(" + tqg_today_category.get(j - 1).getNum() + ")";
+        for (int j = 1; j < quanCategoryBeen.size() + 1; j++) {
+            num = num + quanCategoryBeen.get(j - 1).getNum();
+            constellations[j] = quanCategoryBeen.get(j - 1).getGoods_cat_name() + "(" + quanCategoryBeen.get(j - 1).getNum() + ")";
         }
         constellations[0] = "全部类别(" + num + ")";
         welcome.setText("欢迎你,亲爱的游客,今天共更新"+num+"条记录");
@@ -548,7 +641,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    public void setTqgTodayView(List<TqgTodayData.TqgTodayDataBean> list) {
+    public void setTqgTodayView(List<QuanBean.QuanDataBean> list) {
         if (page == 1) {
             adapter.setData(list);
         } else {
@@ -583,7 +676,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
         }
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

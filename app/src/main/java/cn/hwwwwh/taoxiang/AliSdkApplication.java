@@ -33,12 +33,12 @@ public class AliSdkApplication extends Application {
         AlibcTradeSDK.asyncInit(this, new AlibcTradeInitCallback() {
             @Override
             public void onSuccess() {
-                Toast.makeText(AliSdkApplication.this, "初始化成功", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(AliSdkApplication.this, "初始化成功", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(int code, String msg) {
-                Toast.makeText(AliSdkApplication.this, "初始化失败,错误码="+code+" / 错误消息="+msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(AliSdkApplication.this, "初始化应用失败,错误码="+code+" / 错误消息="+msg, Toast.LENGTH_SHORT).show();
             }
         });
 

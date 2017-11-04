@@ -1,7 +1,5 @@
 package cn.hwwwwh.taoxiang.model.bean;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Created by 97481 on 2017/10/9/ 0009.
  */
@@ -31,6 +29,11 @@ public class UpdateBean {
      */
 
     private String update_app_size;
+    /**
+     * shape_text : 淘享下载地址：http://cs.hwwwwh.cn/taoxiang.apk，复制浏览器打开
+     */
+
+    private String share_text;
 
     public String getUpdate_url() {
         return update_url;
@@ -95,5 +98,13 @@ public class UpdateBean {
 
     public void setUpdate_app_size(String update_app_size) {
         this.update_app_size = update_app_size;
+    }
+
+    public String getShare_text() {
+        return share_text;
+    }
+
+    public void setShare_text(String share_text) {
+        this.share_text = share_text;
     }
 }

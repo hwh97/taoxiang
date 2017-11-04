@@ -158,7 +158,7 @@ public class MyDropDownMenu extends LinearLayout {
         maskView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((TextView) tabMenuView.getChildAt(current_tab_position)).setTextColor(textUnselectedColor);
+                //((TextView) tabMenuView.getChildAt(current_tab_position)).setTextColor(textUnselectedColor);
                 closeMenu();
             }
         });

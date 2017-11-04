@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <item android:id="@+id/action_tmr"
+  <!--  <item android:id="@+id/action_tmr"
         android:title="明日预告"
         android:icon="@drawable/ic_yugao2"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"/>-->
 
     <item android:id="@+id/action_search"
         android:title="搜索"

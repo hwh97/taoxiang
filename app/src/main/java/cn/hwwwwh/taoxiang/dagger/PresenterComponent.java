@@ -5,7 +5,6 @@ import javax.inject.Singleton;
 import cn.hwwwwh.taoxiang.dagger.module.PresenterModule;
 import cn.hwwwwh.taoxiang.view.activity.MainActivity;
 import cn.hwwwwh.taoxiang.view.activity.TmrActivity;
-import cn.hwwwwh.taoxiang.view.iface.IMainCryVIew;
 import dagger.Component;
 
 /**
