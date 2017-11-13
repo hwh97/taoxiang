@@ -5,11 +5,25 @@
     app:srlEnableLoadmoreWhenContentNotFull="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:background="#f6f6f6"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycleView"
         android:background="@color/bg_color"
         android:layout_height="match_parent"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent" />
+
+        <ImageView
+            android:id="@+id/noGood"
+            android:visibility="gone"
+            android:src="@drawable/nogood"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
 
 </com.scwang.smartrefresh.layout.SmartRefreshLayout>

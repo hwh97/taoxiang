@@ -11,6 +11,8 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import cn.hwwwwh.taoxiang.dagger.DaggerPresenterComponent;
+import cn.hwwwwh.taoxiang.dagger.module.PresenterModule;
 import cn.hwwwwh.taoxiang.listener.LifeCycleListener;
 import cn.hwwwwh.taoxiang.manager.ActivityStackManager;
 import pub.devrel.easypermissions.EasyPermissions;

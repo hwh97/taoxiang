@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import com.alibaba.baichuan.android.trade.AlibcTradeSDK;
 import com.alibaba.baichuan.android.trade.callback.AlibcTradeInitCallback;
+import com.mob.MobApplication;
 
 import cn.hwwwwh.taoxiang.dagger.PresenterComponent;
 
@@ -18,7 +19,7 @@ import cn.hwwwwh.taoxiang.dagger.PresenterComponent;
  * <p/>
  * 功能说明：全局application
  */
-public class AliSdkApplication extends Application {
+public class AliSdkApplication  extends MobApplication{
 
     public static AliSdkApplication application = null;
     public static PresenterComponent presenterComponent;

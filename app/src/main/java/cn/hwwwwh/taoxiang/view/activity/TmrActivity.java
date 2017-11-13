@@ -21,8 +21,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import cn.hwwwwh.taoxiang.CoustomView.SpacesItemDecoration;
 import cn.hwwwwh.taoxiang.R;
 import cn.hwwwwh.taoxiang.adapter.TqgTmrAdapter;
 import cn.hwwwwh.taoxiang.api.ApiUrls;
@@ -61,7 +59,7 @@ public class TmrActivity extends BaseActivity implements ITmrTqgDataView {
     protected void init() {
         toolbar.setTitle("明日预告");
         setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

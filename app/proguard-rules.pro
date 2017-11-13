@@ -188,3 +188,9 @@
 -dontwarn retrofit2.**
 
 
+-keep class cn.sharesdk.**{*;}
+-keep class cn.smssdk.**{*;}
+-keep class com.mob.**{*;}
+-keep class **.R$* {*;}
+
+

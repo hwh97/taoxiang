@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:windowSoftInputMode="adjustPan|adjustResize"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <TextView
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:layout_marginLeft="15dp"
+            android:layout_gravity="center"
+            android:text="昵称修改"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:id="@+id/done_view"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_width="50dp"
+            android:gravity="center"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/ic_done_black_24dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:paddingLeft="15dp"
+        android:gravity="center_vertical"
+        android:background="@color/bg_color"
+        android:textColor="@color/darkgray"
+        android:textSize="12sp"
+        android:text="昵称要求2-12位(中文,英文,数字,下划线)"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"/>
+
+    <EditText
+        android:id="@+id/nickEdit"
+        android:theme="@style/MyEditText"
+        android:maxLines="1"
+        android:ellipsize="none"
+        android:singleLine="true"
+        android:maxLength="12"
+        android:paddingLeft="15dp"
+        android:paddingBottom="10dp"
+        android:textSize="16sp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp" />
+
+
+</LinearLayout>

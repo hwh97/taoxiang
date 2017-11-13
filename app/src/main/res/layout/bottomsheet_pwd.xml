@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:windowSoftInputMode="adjustPan|adjustResize"
+    android:background="@color/white"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <TextView
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:layout_marginLeft="15dp"
+            android:layout_gravity="center"
+            android:text="密码修改"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:id="@+id/done_view"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_width="50dp"
+            android:gravity="center"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/ic_done_black_24dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:paddingLeft="15dp"
+        android:gravity="center_vertical"
+        android:background="@color/bg_color"
+        android:textColor="@color/darkgray"
+        android:textSize="12sp"
+        android:text="请先输入原密码进行验证"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"/>
+
+    <EditText
+        android:background="@null"
+        android:id="@+id/oldEdit"
+        android:hint="旧密码-6-20位字母数字"
+        android:digits="0123456789abcdefghigklmnopqrstuvwxyz"
+        android:fitsSystemWindows="true"
+        android:focusable="true"
+        android:textColorHint="@color/darkgray"
+        android:theme="@style/MyEditText"
+        android:maxLines="1"
+        android:ellipsize="none"
+        android:singleLine="true"
+        android:maxLength="20"
+        android:paddingLeft="15dp"
+        android:paddingBottom="10dp"
+        android:textSize="14sp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp" />
+
+    <View
+        android:id="@+id/pt_fgx"
+        android:layout_width="match_parent"
+        android:layout_height="0.4dp"
+        android:background="#cdcdcd" />
+
+    <EditText
+        android:background="@null"
+        android:id="@+id/newEdit"
+        android:hint="新密码-6-20位字母数字"
+        android:digits="0123456789abcdefghigklmnopqrstuvwxyz"
+        android:textColorHint="@color/darkgray"
+        android:theme="@style/MyEditText"
+        android:maxLines="1"
+        android:ellipsize="none"
+        android:singleLine="true"
+        android:maxLength="12"
+        android:paddingLeft="15dp"
+        android:paddingBottom="10dp"
+        android:textSize="14sp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp" />
+
+
+</LinearLayout>

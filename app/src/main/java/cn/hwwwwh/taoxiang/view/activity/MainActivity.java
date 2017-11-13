@@ -15,26 +15,30 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.baichuan.android.trade.AlibcTrade;
 import com.alibaba.baichuan.android.trade.model.AlibcShowParams;
-import com.alibaba.baichuan.android.trade.model.OpenType;
-import com.alibaba.baichuan.android.trade.page.AlibcPage;
 import com.alibaba.baichuan.trade.biz.core.taoke.AlibcTaokeParams;
 
+import com.alibaba.baichuan.trade.biz.login.AlibcLogin;
 import com.alibaba.sdk.android.feedback.impl.FeedbackAPI;
+import com.bumptech.glide.Glide;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.kingja.magicmirror.MagicMirrorView;
+import com.mob.ums.OperationCallback;
+import com.mob.ums.UMSSDK;
+import com.mob.ums.User;
 import com.qiangxi.checkupdatelibrary.bean.CheckUpdateInfo;
 import com.scwang.smartrefresh.header.WaterDropHeader;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -57,12 +61,12 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.hwwwwh.taoxiang.CoustomView.CircleImageView;
 import cn.hwwwwh.taoxiang.CoustomView.ForceUpdateDialog;
 import cn.hwwwwh.taoxiang.CoustomView.PriceEditText;
 import cn.hwwwwh.taoxiang.CoustomView.SearchFragment;
 import cn.hwwwwh.taoxiang.CoustomView.SpacesItemDecoration;
 import cn.hwwwwh.taoxiang.CoustomView.dorpmenu.MyDropDownMenu;
-import cn.hwwwwh.taoxiang.DemoTradeCallback;
 import cn.hwwwwh.taoxiang.R;
 import cn.hwwwwh.taoxiang.adapter.QuanAdapter;
 import cn.hwwwwh.taoxiang.api.ApiUrls;
@@ -70,6 +74,7 @@ import cn.hwwwwh.taoxiang.api.ApiUtils;
 import cn.hwwwwh.taoxiang.base.BaseActivity;
 import cn.hwwwwh.taoxiang.dagger.DaggerPresenterComponent;
 import cn.hwwwwh.taoxiang.dagger.module.PresenterModule;
+
 import cn.hwwwwh.taoxiang.model.bean.QuanBean;
 import cn.hwwwwh.taoxiang.model.bean.QuanCryBean;
 import cn.hwwwwh.taoxiang.model.bean.UpdateBean;
@@ -115,9 +120,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     SmartRefreshLayout refreshLayout;
     TextView welcome;
     TextView login;
-    MagicMirrorView headPic;
+    CircleImageView headPic;
     PriceEditText lpEdt;
     PriceEditText mpEdt;
+    ImageView noGood;
     Button btn;
 
     private CheckUpdateInfo mCheckUpdateInfo;
@@ -151,7 +157,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         toolbar.setTitle("");
         toolbar.setTitleTextAppearance(this,R.style.ToolbarTitle);
         setSupportActionBar(toolbar);
-
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -202,13 +207,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         downloadTqgCryData();
         dropDownMenu.setDropDownMenu(Arrays.asList(headers), initViewData(), contentView);
         recyclerView = (RecyclerView) findViewById(R.id.recycleView);
-
+        noGood=(ImageView) findViewById(R.id.noGood);
         View headerView = navView.getHeaderView(0);
         welcome=(TextView)headerView.findViewById(R.id.welcome);
         login=(TextView)headerView.findViewById(R.id.login);
-        headPic=(MagicMirrorView)headerView.findViewById(R.id.headPic);
+        headPic=(CircleImageView)headerView.findViewById(R.id.headPic);
         login.setOnClickListener(this);
         headPic.setOnClickListener(this);
+        loadHeadBar();
 
         initRecycleView();
         refreshLayout = (SmartRefreshLayout) findViewById(R.id.refreshLayout);
@@ -239,6 +245,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     protected void initBundleData() {
+    }
+
+    private void loadHeadBar(){
+        if(!UMSSDK.getLoginUserId().isEmpty() &&!UMSSDK.getLoginUserToken().isEmpty()) {
+            UMSSDK.getLoginUser(new OperationCallback<User>() {
+                @Override
+                public void onSuccess(User user) {
+                    super.onSuccess(user);
+                    Glide.with(MainActivity.this).load(user.avatar.get()[0]).into(headPic);
+                    login.setText(user.nickname.get());
+                }
+
+                @Override
+                public void onFailed(Throwable throwable) {
+                    super.onFailed(throwable);
+                    ToastUtils.showToast(getApplicationContext(), "获取用户信息失败"+throwable.getMessage());
+                }
+            });
+        }else{
+            Glide.with(getApplicationContext()).load(R.drawable.headpic).into(headPic);
+            login.setText("用户登陆");
+        }
     }
 
     private void loadUpdate(){
@@ -496,6 +524,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         startActivity(Intent.createChooser(shareIntent, "分享到"));
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadHeadBar();
+    }
 
     @Override
     public void onBackPressed() {
@@ -556,8 +589,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         if (id == R.id.nav_home) {
             // Handle the camera action
-        } else if (id == R.id.nav_menu1) {
-
+        } else if (id == R.id.nav_collect) {
+            if(!UMSSDK.getLoginUserId().isEmpty() && !UMSSDK.getLoginUserToken().isEmpty()) {
+                Intent intent = new Intent(MainActivity.this, CollectActivity.class);
+                startActivity(intent);
+            }else{
+                Intent intent=new Intent(MainActivity.this,LoginActivity.class);
+                intent.putExtra("isNeedFinish",false);
+                startActivity(intent);
+            }
         } else if (id == R.id.nav_menu2) {
 
         } else if (id == R.id.nav_menu3) {
@@ -566,7 +606,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             shareText();
         }else if (id == R.id.nav_send) {
             FeedbackAPI.init(this.getApplication(), "24646100","2abd1fba85bac1a05c1545a727e4523f");
-            FeedbackAPI.setBackIcon(R.drawable.ic_arrow_back_black_24dp);
+            FeedbackAPI.setBackIcon(R.drawable.ic_arrow_back_white_24dp);
             FeedbackAPI.openFeedbackActivity();
         }else if(id==R.id.nav_update){
             ApiUtils.getTqgApi(ApiUrls.tqgApiUrl)
@@ -631,7 +671,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             constellations[j] = quanCategoryBeen.get(j - 1).getGoods_cat_name() + "(" + quanCategoryBeen.get(j - 1).getNum() + ")";
         }
         constellations[0] = "全部类别(" + num + ")";
-        welcome.setText("欢迎你,亲爱的游客,今天共更新"+num+"条记录");
+        welcome.setText("");
         dropDownMenu.refreshGridItem(constellations);
     }
 
@@ -647,6 +687,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         } else {
             adapter.addMoreData(list);
         }
+        if(list.size()==0 && page ==1){
+            noGood.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        }else{
+            noGood.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
         refreshLayout.finishRefresh();
         refreshLayout.finishLoadmore();
     }
@@ -654,6 +701,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public void loadTqgTodayFail(String msg) {
         ToastUtils.showToast(this, msg);
+        if(page ==1){
+            noGood.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        }else{
+            noGood.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
         if (page != 1) {
             page = page - 1;
         }
@@ -668,11 +722,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         ButterKnife.bind(this);
     }
 
+
     @Override
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.login:case R.id.headPic:
-                ToastUtils.showToast(this,"用户系统正在开发");
+                Intent intent=null;
+                if(!UMSSDK.getLoginUserToken().isEmpty() &&!UMSSDK.getLoginUserId().isEmpty()){
+                    intent=new Intent(MainActivity.this,UserActivity.class);
+                }else {
+                    intent = new Intent(MainActivity.this, LoginActivity.class);
+                }
+                startActivity(intent);
                 break;
         }
     }
@@ -690,7 +751,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             mForceUpdateDialog.download();
         } else {
             //用户不同意,提示用户,如下载失败,因为您拒绝了相关权限
-            Toast.makeText(this, "请同意权限以安装应用", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "请同意权限以安装应用及头像上传等功能", Toast.LENGTH_SHORT).show();
 //            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 //                Log.e("tag", "false.请开启读写sd卡权限,不然无法正常工作");
 //            } else {

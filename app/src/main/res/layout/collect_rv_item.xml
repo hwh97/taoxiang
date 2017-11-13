@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/bg_color"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardView"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="110dp">
+            <RelativeLayout
+                android:layout_width="150dp"
+                android:layout_margin="5dp"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:id="@+id/collect_pic"
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/loadpic" />
+                <LinearLayout
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:background="@color/status_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="17dp">
+
+                    <ImageView
+                        android:id="@+id/biaozhi"
+                        android:layout_marginLeft="1dp"
+                        android:src="@drawable/taobao"
+                        android:layout_width="15dp"
+                        android:layout_height="17dp" />
+
+                    <TextView
+                        android:id="@+id/endtime_tv"
+                        android:gravity="end"
+                        android:textSize="12sp"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginEnd="6dp"
+                        android:textColor="@color/white"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:maxLines="2"
+                    android:padding="5dp"
+                    android:text="棒冰行动，公益传播设计夏令营" />
+
+                <RelativeLayout
+                    android:layout_below="@+id/title"
+                    android:layout_gravity="bottom"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/Price"
+                        android:text="￥39"
+                        android:layout_marginBottom="12dp"
+                        android:gravity="bottom"
+                        android:textStyle="bold"
+                        android:textColor="@color/red"
+                        android:textSize="16sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentStart="true" />
+
+                    <RelativeLayout
+                        android:id="@+id/cancel_rl"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/textview_border"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="8dp"
+                        android:padding="3dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/star"
+                            android:paddingLeft="2dp"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/ic_favourites_filled_star_yellow"
+                            android:layout_width="15dp"
+                            android:layout_height="15dp" />
+
+                        <TextView
+                            android:id="@+id/collect_text"
+                            android:paddingRight="2dp"
+                            android:layout_centerVertical="true"
+                            android:padding="3dp"
+                            android:layout_toEndOf="@id/star"
+                            android:text="取消收藏"
+                            android:textSize="12sp"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/isVaild"
+                        android:paddingRight="2dp"
+                        android:layout_centerVertical="true"
+                        android:layout_toStartOf="@id/cancel_rl"
+                        android:text="已失效"
+                        android:textSize="12sp"
+                        android:visibility="gone"
+                        android:layout_marginBottom="11dp"
+                        android:background="@drawable/textview_border_red"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginEnd="6dp"
+                        android:padding="3dp"
+                        android:textColor="@color/ali_feedback_red"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>
