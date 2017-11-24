@@ -34,10 +34,16 @@ public interface ApiServices {
     @GET("QuanCryApi.php")
     Observable<QuanCryBean> getQuanCryData(@Query("method") String method);
 
+    @GET("TkjdQuanCryApi.php")
+    Observable<QuanCryBean> getTkjdQuanCryData(@Query("type") int type);
+
     @GET("QuanApi.php")
     Observable<QuanBean> getQuanData(@Query("type") String type, @Query("page") int page
             , @Query("category") String category, @Query("lp") double lp, @Query("mp") Double mp, @Query("keyword") String keyword);
 
+    @GET("TkjdQuanApi.php")
+    Observable<QuanBean> getTkjdQuanData(@Query("isDp") int isDp,@Query("type") String type, @Query("page") int page
+            , @Query("category") String category, @Query("lp") double lp, @Query("mp") Double mp, @Query("keyword") String keyword);
 
     @GET("IsCollectApi.php")
     Observable<InsertCollectBean> isCollect(@Query("UserId") String userId,@Query("GoodsID") String goodId);

@@ -60,8 +60,9 @@ public class ConstellationAdapter extends BaseAdapter {
         return convertView;
     }
 
-    void setData(List<String> list){
+    void setData(int cryPos,List<String> list){
         this.list = list;
+        setCheckItem(cryPos);
         notifyDataSetChanged();
     }
 

@@ -2,15 +2,20 @@ package cn.hwwwwh.taoxiang.view.activity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -19,6 +24,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -30,12 +37,10 @@ import android.widget.Toast;
 import com.alibaba.baichuan.android.trade.model.AlibcShowParams;
 import com.alibaba.baichuan.trade.biz.core.taoke.AlibcTaokeParams;
 
-import com.alibaba.baichuan.trade.biz.login.AlibcLogin;
 import com.alibaba.sdk.android.feedback.impl.FeedbackAPI;
 import com.bumptech.glide.Glide;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
-import com.kingja.magicmirror.MagicMirrorView;
 import com.mob.ums.OperationCallback;
 import com.mob.ums.UMSSDK;
 import com.mob.ums.User;
@@ -80,6 +85,7 @@ import cn.hwwwwh.taoxiang.model.bean.QuanCryBean;
 import cn.hwwwwh.taoxiang.model.bean.UpdateBean;
 import cn.hwwwwh.taoxiang.presenter.DownloadQuanCryPre;
 import cn.hwwwwh.taoxiang.presenter.DownloadQuanDataPre;
+import cn.hwwwwh.taoxiang.utils.CleanMessageUtil;
 import cn.hwwwwh.taoxiang.utils.ToastUtils;
 import cn.hwwwwh.taoxiang.view.iface.IMainQuanCryVIew;
 import cn.hwwwwh.taoxiang.view.iface.IMainQuanDataView;
@@ -125,6 +131,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     PriceEditText mpEdt;
     ImageView noGood;
     Button btn;
+    //0为默认首页，1为大牌推荐，2为每日必拍
+    private int couponType =0;
 
     private CheckUpdateInfo mCheckUpdateInfo;
     private ForceUpdateDialog mForceUpdateDialog;
@@ -231,6 +239,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             public void onRefresh(RefreshLayout refreshlayout) {
                 downloadTqgCryData();
                 page = 1;
+                recyclerView.smoothScrollToPosition(0);
                 downloadTqgData();
             }
         });
@@ -247,6 +256,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void initBundleData() {
     }
 
+    private void setTitle(String title){
+        toolbar.setTitle(title);
+    }
+
     private void loadHeadBar(){
         if(!UMSSDK.getLoginUserId().isEmpty() &&!UMSSDK.getLoginUserToken().isEmpty()) {
             UMSSDK.getLoginUser(new OperationCallback<User>() {
@@ -260,7 +273,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 @Override
                 public void onFailed(Throwable throwable) {
                     super.onFailed(throwable);
-                    ToastUtils.showToast(getApplicationContext(), "获取用户信息失败"+throwable.getMessage());
+                    Log.d("testtaoxiang","获取用户信息失败"+throwable.getMessage());
+                    ToastUtils.showToast(getApplicationContext(), "获取用户信息失败");
                 }
             });
         }else{
@@ -333,6 +347,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
         //必须指定adaoter
         recyclerView.setAdapter(adapter);
+
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         //必须指定layoutmanager
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false));
         //设置item之间的间隔
@@ -361,6 +377,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         Bundle bundle=new Bundle();
         bundle.putString("CouponLink",couponLink);
         bundle.putString("GoodID",id);
+        bundle.putInt("CouponType",couponType);
         intent.putExtras(bundle);
         startActivity(intent);
     }
@@ -489,11 +506,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public void downloadTqgData() {
         refreshLayout.autoRefresh();
-        downloadQuanDataPre.downloadTqgTodayData(type, page, category, lp, mp, keyword);
+        downloadQuanDataPre.downloadQuanData(couponType,type, page, category, lp, mp, keyword);
     }
 
     public void downloadTqgCryData() {
-        downloadQuanCryPre.loadCry(category);
+        downloadQuanCryPre.loadCry(couponType);
     }
 
     /**
@@ -531,6 +548,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        CleanMessageUtil.clearAllCache(getApplicationContext());
+    }
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -546,6 +569,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (!TextUtils.isEmpty(keyword.trim())) {
             keyword = "";
             toolbar.setTitle("");
+           if(menuItem!=null){
+               if(menuItem.getItemId()==R.id.nav_dp){
+                   setTitle("大牌推荐");
+               }else if(menuItem.getItemId()==R.id.nav_bp){
+                   setTitle("每日必拍");
+               }else {
+                   toolbar.setTitle("");
+               }
+           }
             page=1;
             downloadTqgData();
             return;
@@ -581,14 +613,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return super.onOptionsItemSelected(item);
     }
 
+    private MenuItem menuItem;
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         if (id == R.id.nav_home) {
             // Handle the camera action
+            this.menuItem=item;
+            couponType =0;
+            if(keyword.equals(""))
+                setTitle("");
+            else
+                setTitle("“"+keyword+"“搜索结果");
+            downloadTqgData();
         } else if (id == R.id.nav_collect) {
             if(!UMSSDK.getLoginUserId().isEmpty() && !UMSSDK.getLoginUserToken().isEmpty()) {
                 Intent intent = new Intent(MainActivity.this, CollectActivity.class);
@@ -598,10 +638,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 intent.putExtra("isNeedFinish",false);
                 startActivity(intent);
             }
-        } else if (id == R.id.nav_menu2) {
-
-        } else if (id == R.id.nav_menu3) {
-
+        } else if (id == R.id.nav_dp) {
+            this.menuItem=item;
+            couponType =1;
+            if(!keyword.equals("") &&!keyword.isEmpty()){
+                setTitle("“"+keyword+"“搜索结果");
+            }else
+                setTitle("大牌推荐");
+            downloadTqgData();
+        } else if (id == R.id.nav_bp) {
+            this.menuItem=item;
+            couponType =2;
+            if(!keyword.equals("") &&!keyword.isEmpty()){
+                setTitle("“"+keyword+"“搜索结果");
+            }else
+                setTitle("每日必拍");
+            downloadTqgData();
         } else if (id == R.id.nav_share) {
             shareText();
         }else if (id == R.id.nav_send) {
@@ -666,13 +718,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         constellations = new String[quanCategoryBeen.size() + 1];
         constellations[0] = "全部类别";
         int num = 0;
+        int cryPos=0;
         for (int j = 1; j < quanCategoryBeen.size() + 1; j++) {
             num = num + quanCategoryBeen.get(j - 1).getNum();
             constellations[j] = quanCategoryBeen.get(j - 1).getGoods_cat_name() + "(" + quanCategoryBeen.get(j - 1).getNum() + ")";
+            if(quanCategoryBeen.get(j - 1).getGoods_cat_name() .equals(category)){
+                cryPos=j;
+            }
         }
         constellations[0] = "全部类别(" + num + ")";
         welcome.setText("");
-        dropDownMenu.refreshGridItem(constellations);
+        dropDownMenu.refreshGridItem(cryPos,constellations);
     }
 
     @Override
@@ -722,7 +778,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         ButterKnife.bind(this);
     }
 
-
     @Override
     public void onClick(View v) {
         switch(v.getId()){
@@ -750,16 +805,29 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             //进行下载操作
             mForceUpdateDialog.download();
         } else {
-            //用户不同意,提示用户,如下载失败,因为您拒绝了相关权限
-            Toast.makeText(this, "请同意权限以安装应用及头像上传等功能", Toast.LENGTH_SHORT).show();
-//            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-//                Log.e("tag", "false.请开启读写sd卡权限,不然无法正常工作");
-//            } else {
-//                Log.e("tag", "true.请开启读写sd卡权限,不然无法正常工作");
-//            }
-
+            Toast.makeText(this, "请同意存储权限", Toast.LENGTH_SHORT).show();
+            AskForPermission();
         }
 
     }
 
+    private void AskForPermission() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("请同意存储权限");
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.setPositiveButton("转去设置", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.setData(Uri.parse("package:" + getPackageName())); // 根据包名打开对应的设置界面
+                startActivity(intent);
+            }
+        });
+        builder.create().show();
+    }
 }

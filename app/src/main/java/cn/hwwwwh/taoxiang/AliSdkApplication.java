@@ -44,7 +44,9 @@ public class AliSdkApplication  extends MobApplication{
         });
 
 
+
     }
+
     public static synchronized AliSdkApplication getInstance() {
         return application;
     }

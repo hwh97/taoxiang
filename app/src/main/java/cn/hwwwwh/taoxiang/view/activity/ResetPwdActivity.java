@@ -105,6 +105,7 @@ public class ResetPwdActivity extends BaseActivity {
             case R.id.btnResetPwd:
                 break;
             case R.id.btnLinkToLoginScreen:
+                    finish();
                 break;
         }
     }

@@ -130,7 +130,7 @@ public class RegisterActivity extends BaseActivity {
 
                 break;
             case R.id.btnLinkToLoginScreen:
-
+                finish();
                 break;
         }
     }

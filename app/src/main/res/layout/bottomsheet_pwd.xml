@@ -81,7 +81,7 @@
         android:maxLines="1"
         android:ellipsize="none"
         android:singleLine="true"
-        android:maxLength="12"
+        android:maxLength="20"
         android:paddingLeft="15dp"
         android:paddingBottom="10dp"
         android:textSize="14sp"

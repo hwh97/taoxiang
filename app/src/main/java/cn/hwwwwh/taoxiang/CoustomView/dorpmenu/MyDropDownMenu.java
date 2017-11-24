@@ -273,7 +273,8 @@ public class MyDropDownMenu extends LinearLayout {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 cryAdapter.setCheckItem(position);
-                setTabText(current_tab_position, cryArr[position]);
+                String category=dealCryText(cryArr[position]);
+                setTabText(current_tab_position,category);
                 closeMenu();
                 lis.onSelectDefaultMenu(index, position, cryAdapter.getItem(position));
             }
@@ -281,9 +282,14 @@ public class MyDropDownMenu extends LinearLayout {
         return v;
     }
 
-    public void refreshGridItem(String[] arr){
+    private String dealCryText(String text) {
+        int begin = text.indexOf("(");
+        return text.substring(0, begin);
+    }
+
+    public void refreshGridItem(int cryPos,String[] arr){
         this.cryArr=arr;
-        cryAdapter.setData(Arrays.asList(arr));
+        cryAdapter.setData(cryPos,Arrays.asList(arr));
     }
 
     private void addTab(@NonNull List<String> tabTexts, int i) {

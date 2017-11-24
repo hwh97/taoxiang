@@ -6,6 +6,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -46,8 +48,6 @@ public class LoginActivity extends BaseActivity {
     Button btnLogin;
     @BindView(R.id.forget_tv)
     TextView forgetTv;
-    @BindView(R.id.register_btn)
-    TextView registerBtn;
 
     private boolean isNeedFinish=true;
 
@@ -138,7 +138,7 @@ public class LoginActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.btnLogin, R.id.forget_tv, R.id.register_btn})
+    @OnClick({R.id.btnLogin, R.id.forget_tv})
     public void onViewClicked(View view) {
         Intent intent=null;
         switch (view.getId()) {
@@ -149,11 +149,28 @@ public class LoginActivity extends BaseActivity {
                 intent=new Intent(LoginActivity.this,ResetPwdActivity.class);
                 startActivity(intent);
                 break;
-            case R.id.register_btn:
-                intent=new Intent(LoginActivity.this,RegisterActivity.class);
-                startActivity(intent);
-                break;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.login, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.action_register) {
+            Intent intent=new Intent(LoginActivity.this,RegisterActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }

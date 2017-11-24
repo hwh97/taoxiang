@@ -12,6 +12,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -49,6 +51,8 @@ import cn.hwwwwh.taoxiang.utils.ToastUtils;
 import cn.hwwwwh.taoxiang.utils.Util;
 import cn.hwwwwh.taoxiang.widget.RLoadingDialog;
 
+import static com.alibaba.baichuan.trade.biz.applink.adapter.AppLinkConstants.REQUESTCODE;
+
 public class UserActivity extends BaseActivity {
 
     @BindView(R.id.toolbar_userinfo)
@@ -81,7 +85,7 @@ public class UserActivity extends BaseActivity {
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 10002;
     private static final int PICK_ACTIVITY_REQUEST_CODE = 10003;
     private static final int CROP_ACTIVITY_REQUEST_CODE = 10008;
-    private static final int WRITE_EXTERNAL_STORAGE_REQUEST_CODE = 10010;
+    private static final int REQUESTCODE = 10010;
 
     private String imageFilePath; //拍照和选择照片后图片路径
     private Uri pickPhotoImageUri; //API22以下相册选择图片uri
@@ -144,7 +148,7 @@ public class UserActivity extends BaseActivity {
                 if (rLoadingDialog != null && rLoadingDialog.isShowing()) {
                     rLoadingDialog.dismiss();
                 }
-                ToastUtils.showToast(getApplicationContext(), throwable.getMessage());
+                Log.d("testtaoxiang", throwable.getMessage());
                 super.onFailed(throwable);
             }
 
@@ -254,7 +258,7 @@ public class UserActivity extends BaseActivity {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, PICK_ACTIVITY_REQUEST_CODE);
         } else {
-            ToastUtils.showToast(UserActivity.this, "请同意相机权限");
+            ToastUtils.showToast(UserActivity.this, "请同意相机权限及存储权限");
         }
     }
 
@@ -296,17 +300,45 @@ public class UserActivity extends BaseActivity {
      */
     private boolean permission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                //拒绝权限以后
-                return false;
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA}, REQUESTCODE);
+            return false;
+        }else
+         return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)||
+                        !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                    AskForPermission();
+                }
             }
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    WRITE_EXTERNAL_STORAGE_REQUEST_CODE);
-            return true;
-        }
-        return true;
+    }
+
+    private void AskForPermission() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("请同意相机及存储权限!");
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.setPositiveButton("转去设置", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.setData(Uri.parse("package:" + getPackageName())); // 根据包名打开对应的设置界面
+                startActivity(intent);
+            }
+        });
+        builder.create().show();
     }
 
     @Override
@@ -416,6 +448,7 @@ public class UserActivity extends BaseActivity {
                 if(rLoadingDialog!=null &&rLoadingDialog.isShowing()){
                     rLoadingDialog.dismiss();
                 }
+                Log.d("testtaoxiang","修改用户密码失败" + throwable.getMessage());
                 ToastUtils.showToast(UserActivity.this, "修改用户密码失败" + throwable.getMessage());
             }
 
@@ -460,28 +493,6 @@ public class UserActivity extends BaseActivity {
                     }
                 });
                 break;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        //如果用户同意所请求的权限
-        if (permissions[0].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            //UPDATE_DIALOG_PERMISSION_REQUEST_CODE和FORCE_UPDATE_DIALOG_PERMISSION_REQUEST_CODE这两个常量是library中定义好的
-            //所以在进行判断时,必须要结合这两个常量进行判断.
-            //非强制更新对话框
-
-        } else {
-            //用户不同意,提示用户,如下载失败,因为您拒绝了相关权限
-            Toast.makeText(this, "请同意权限以拍照上传", Toast.LENGTH_SHORT).show();
-//            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-//                Log.e("tag", "false.请开启读写sd卡权限,不然无法正常工作");
-//            } else {
-//                Log.e("tag", "true.请开启读写sd卡权限,不然无法正常工作");
-//            }
-
         }
     }
 

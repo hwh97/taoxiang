@@ -1,9 +1,12 @@
 package cn.hwwwwh.taoxiang.base;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 
+import com.bumptech.glide.Glide;
+import com.mob.ums.UMSSDK;
 import com.trello.rxlifecycle2.components.RxActivity;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
@@ -37,6 +40,7 @@ public abstract class BaseActivity extends RxAppCompatActivity implements EasyPe
         if (mListener != null) {
             mListener.onCreate(savedInstanceState);
         }
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         ActivityStackManager.getManager().push(this);
         setContentView(getContentViewId());
         mContext = this;

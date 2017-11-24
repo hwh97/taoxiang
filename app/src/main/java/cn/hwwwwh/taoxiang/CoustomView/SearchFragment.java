@@ -1,6 +1,7 @@
 package cn.hwwwwh.taoxiang.CoustomView;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -122,6 +123,8 @@ public class SearchFragment extends DialogFragment implements DialogInterface.On
         searchUnderline = (View) view.findViewById(com.wyt.searchbox.R.id.search_underline);
         tvSearchClean = (TextView) view.findViewById(com.wyt.searchbox.R.id.tv_search_clean);
         viewSearchOutside = (View) view.findViewById(com.wyt.searchbox.R.id.view_search_outside);
+
+        etSearchKeyword.setTextColor(Color.BLACK);
 
         //实例化动画效果
         mCircularRevealAnim = new CircularRevealAnim();
