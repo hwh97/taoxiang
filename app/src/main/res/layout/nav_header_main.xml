@@ -37,7 +37,6 @@
         android:layout_alignParentStart="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="欢迎您,亲爱的游客"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
 

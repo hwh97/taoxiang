@@ -1,7 +1,7 @@
 package cn.hwwwwh.taoxiang.CoustomView;
 
 
-        import android.content.Context;
+import android.content.Context;
         import android.content.res.TypedArray;
         import android.graphics.Bitmap;
         import android.graphics.BitmapShader;

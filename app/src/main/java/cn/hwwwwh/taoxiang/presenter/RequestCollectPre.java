@@ -66,4 +66,5 @@ public class RequestCollectPre extends BasePresenter<IRequestCollectView,BaseAct
                     }
                 });
     }
+
 }

@@ -15,6 +15,12 @@ import android.os.Environment;
  */
 public class CleanMessageUtil {
 
+
+    public interface clearSuccess{
+        void deleteSuccess();
+
+        void deleteFail();
+    }
     /**
      * @param context
      * @return
@@ -34,11 +40,20 @@ public class CleanMessageUtil {
      * @param context
      *            删除缓存
      */
-    public static void clearAllCache(Context context) {
+    public static void clearAllCache(Context context,clearSuccess clearSuccess) {
         deleteDir(context.getCacheDir());
         if (Environment.getExternalStorageState().equals(
                 Environment.MEDIA_MOUNTED)) {
-            deleteDir(context.getExternalCacheDir());
+            if(deleteDir(context.getExternalCacheDir())){
+                if(clearSuccess!=null)
+                    clearSuccess.deleteSuccess();
+            }else{
+                if(clearSuccess!=null)
+                    clearSuccess.deleteFail();
+            }
+        }else{
+            if(clearSuccess!=null)
+                clearSuccess.deleteFail();
         }
     }
 

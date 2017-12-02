@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
@@ -21,6 +22,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -69,6 +71,7 @@ import butterknife.ButterKnife;
 import cn.hwwwwh.taoxiang.CoustomView.CircleImageView;
 import cn.hwwwwh.taoxiang.CoustomView.ForceUpdateDialog;
 import cn.hwwwwh.taoxiang.CoustomView.PriceEditText;
+import cn.hwwwwh.taoxiang.CoustomView.RecyclerViewScrollDetector;
 import cn.hwwwwh.taoxiang.CoustomView.SearchFragment;
 import cn.hwwwwh.taoxiang.CoustomView.SpacesItemDecoration;
 import cn.hwwwwh.taoxiang.CoustomView.dorpmenu.MyDropDownMenu;
@@ -80,6 +83,7 @@ import cn.hwwwwh.taoxiang.base.BaseActivity;
 import cn.hwwwwh.taoxiang.dagger.DaggerPresenterComponent;
 import cn.hwwwwh.taoxiang.dagger.module.PresenterModule;
 
+import cn.hwwwwh.taoxiang.manager.ActivityStackManager;
 import cn.hwwwwh.taoxiang.model.bean.QuanBean;
 import cn.hwwwwh.taoxiang.model.bean.QuanCryBean;
 import cn.hwwwwh.taoxiang.model.bean.UpdateBean;
@@ -127,6 +131,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     TextView welcome;
     TextView login;
     CircleImageView headPic;
+    ImageView toTop;
     PriceEditText lpEdt;
     PriceEditText mpEdt;
     ImageView noGood;
@@ -148,16 +153,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public double lp = 0;
     public double mp = 100000000;
     public String keyword = "";
+    Boolean isNeedUpdate = false;
 
     private AlibcShowParams alibcShowParams;//页面打开方式，默认，H5，Native
     private AlibcTaokeParams alibcTaokeParams = null;//淘客参数，包括pid，unionid，subPid
     private Map<String, String> exParams;//yhhpass参数
     private String shareText="最新版淘享下载地址:http://taoxiang.hwwwwh.cn/taoxiang.apk";
+    private boolean wifi_switch;
+    private boolean cache_switch;
+    private boolean update_switch;
+    private long exitTime = 0;
 
 
     @Override
     protected int getContentViewId() {
         return R.layout.activity_main;
+    }
+
+    //设置不支持滑动返回
+    @Override
+    public boolean isSupportSwipeBack() {
+        return false;
     }
 
     @Override
@@ -176,7 +192,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         loadUpdate();
 
         contentView = getLayoutInflater().inflate(R.layout.contentview, null);
-
+        dropDownMenu=(MyDropDownMenu) findViewById(R.id.dropDownMenu);
         //该监听回调只监听默认类型，如果是自定义view请自行设置监听，参照demo
         dropDownMenu.addMenuSelectListener(new MyDropDownMenu.OnDefultMenuSelectListener() {
             @Override
@@ -212,9 +228,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
 
         DaggerPresenterComponent.builder().presenterModule(new PresenterModule(this)).build().inject(this);
-        downloadTqgCryData();
         dropDownMenu.setDropDownMenu(Arrays.asList(headers), initViewData(), contentView);
         recyclerView = (RecyclerView) findViewById(R.id.recycleView);
+        toTop=(ImageView) findViewById(R.id.toTop);
+        toTop.setOnClickListener(this);
+        intiToTopBtn();
         noGood=(ImageView) findViewById(R.id.noGood);
         View headerView = navView.getHeaderView(0);
         welcome=(TextView)headerView.findViewById(R.id.welcome);
@@ -254,6 +272,36 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     protected void initBundleData() {
+         wifi_switch = getSharedPreferences().getBoolean("wifi_switch", true);
+         cache_switch=getSharedPreferences().getBoolean("cache_switch",true);
+         update_switch=getSharedPreferences().getBoolean("update_switch",true);
+    }
+
+    private void intiToTopBtn(){
+        toTop.setVisibility(View.INVISIBLE);
+        Glide.with(getApplicationContext()).load(R.drawable.topicon).into(toTop);
+        recyclerView.addOnScrollListener(new RecyclerViewScrollDetector() {
+            @Override
+            public void onScrollUp() {
+                if(toTop.getVisibility()==View.VISIBLE){
+                    toTop.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onScrollDown() {
+                if(toTop.getVisibility()!=View.VISIBLE){
+                    toTop.setVisibility(View.VISIBLE);
+                }
+            }
+            //以滑进顶部识别区1000
+            @Override
+            public void onScrollTop() {
+                if(toTop.getVisibility()==View.VISIBLE){
+                    toTop.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
     }
 
     private void setTitle(String title){
@@ -273,7 +321,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 @Override
                 public void onFailed(Throwable throwable) {
                     super.onFailed(throwable);
-                    Log.d("testtaoxiang","获取用户信息失败"+throwable.getMessage());
+                    //Log.d("testtaoxiang","获取用户信息失败"+throwable.getMessage());
                     ToastUtils.showToast(getApplicationContext(), "获取用户信息失败");
                 }
             });
@@ -299,8 +347,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     @Override
                     public void onNext(@NonNull UpdateBean updateBean) {
                         if (getVersionCode(getApplicationContext())<updateBean.getUpdate_ver_code()) {
-                            LinearLayout gallery = (LinearLayout) navView.getMenu().findItem(R.id.nav_update).getActionView();
+                            LinearLayout gallery = (LinearLayout) navView.getMenu().findItem(R.id.nav_setting).getActionView();
                             gallery.setVisibility(View.VISIBLE);
+                            isNeedUpdate=true;
+                            if(update_switch) {
+                                mCheckUpdateInfo = new CheckUpdateInfo();
+                                mCheckUpdateInfo.setAppName(updateBean.getUpdate_app_name())
+                                        // .setIsForceUpdate(1)//设置是否强制更新,该方法的参数只要和服务端商定好什么数字代表强制更新即可
+                                        .setNewAppReleaseTime(updateBean.getUpdate_Time())//软件发布时间
+                                        // .setNewAppSize(12.3f)//单位为M
+                                        .setNewAppSize(Float.parseFloat(updateBean.getUpdate_app_size()))
+                                        .setNewAppUrl(updateBean.getUpdate_url())
+                                        .setNewAppVersionCode(updateBean.getUpdate_ver_code())//新app的VersionCode
+                                        .setNewAppVersionName(updateBean.getUpdate_ver_name())
+                                        .setNewAppUpdateDesc(updateBean.getUpdate_content());
+                                forceUpdateDialogClick(updateBean.isIgnore_able());
+                            }
                         }
                         if(!updateBean.getShare_text().isEmpty()) {
                             shareText = updateBean.getShare_text();
@@ -347,7 +409,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
         //必须指定adaoter
         recyclerView.setAdapter(adapter);
-
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         //必须指定layoutmanager
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false));
@@ -429,7 +490,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         Observable.combineLatest(observableLp, observableMp, new BiFunction<CharSequence, CharSequence, Boolean>() {
             @Override
             public Boolean apply(@NonNull CharSequence charSequence, @NonNull CharSequence charSequence2) throws Exception {
-
                 return isCharValid(charSequence, charSequence2);
             }
         }).subscribe(new Consumer<Boolean>() {
@@ -547,11 +607,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         loadHeadBar();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        CleanMessageUtil.clearAllCache(getApplicationContext());
-    }
 
     @Override
     public void onBackPressed() {
@@ -582,7 +637,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             downloadTqgData();
             return;
         }
-        super.onBackPressed();
+        if((System.currentTimeMillis()-exitTime) > 2000){
+            Toast.makeText(getApplicationContext(), "再按一次退出淘享", Toast.LENGTH_SHORT).show();
+            exitTime = System.currentTimeMillis();
+            return;
+        } else {
+            if(cache_switch) {
+                CleanMessageUtil.clearAllCache(getApplicationContext(), new CleanMessageUtil.clearSuccess() {
+                    @Override
+                    public void deleteSuccess() {
+                        finish();
+                    }
+
+                    @Override
+                    public void deleteFail() {
+                        finish();
+                    }
+                });
+            }else {
+                finish();
+            }
+            ActivityStackManager.getManager().finishAllActivity();
+        }
     }
 
     @Override
@@ -638,6 +714,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 intent.putExtra("isNeedFinish",false);
                 startActivity(intent);
             }
+            return true;
         } else if (id == R.id.nav_dp) {
             this.menuItem=item;
             couponType =1;
@@ -656,12 +733,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             downloadTqgData();
         } else if (id == R.id.nav_share) {
             shareText();
+            return true;
         }else if (id == R.id.nav_send) {
             FeedbackAPI.init(this.getApplication(), "24646100","2abd1fba85bac1a05c1545a727e4523f");
             FeedbackAPI.setBackIcon(R.drawable.ic_arrow_back_white_24dp);
             FeedbackAPI.openFeedbackActivity();
-        }else if(id==R.id.nav_update){
-            ApiUtils.getTqgApi(ApiUrls.tqgApiUrl)
+            return true;
+        }else if(id==R.id.nav_setting){
+            Intent intent=new Intent(MainActivity.this,SettingActivity.class);
+            intent.putExtra("isNeedUpdate",isNeedUpdate);
+            startActivity(intent);
+            return true;
+            /*ApiUtils.getTqgApi(ApiUrls.tqgApiUrl)
                     .getUpdateInfo()
                     .unsubscribeOn(Schedulers.io())
                     .subscribeOn(Schedulers.io())
@@ -705,7 +788,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         public void onComplete() {
                             d.dispose();
                         }
-                    });
+                    });*/
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -757,12 +840,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public void loadTqgTodayFail(String msg) {
         ToastUtils.showToast(this, msg);
-        if(page ==1){
+        if(page ==1 ){
             noGood.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
         }else{
-            noGood.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
+            //Bug1
+            if(noGood.getVisibility()!=View.VISIBLE) {
+                noGood.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+            }
         }
         if (page != 1) {
             page = page - 1;
@@ -789,6 +875,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     intent = new Intent(MainActivity.this, LoginActivity.class);
                 }
                 startActivity(intent);
+                break;
+            case R.id.toTop:
+                //if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                    recyclerView.smoothScrollToPosition(0);
+//                }else{
+//                    recyclerView.scrollToPosition(0);
+//                }
                 break;
         }
     }

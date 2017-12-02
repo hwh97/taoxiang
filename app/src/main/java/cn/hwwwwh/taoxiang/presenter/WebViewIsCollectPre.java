@@ -26,7 +26,7 @@ public class WebViewIsCollectPre extends BasePresenter<IWebViewCollectView,AliSd
     }
 
 
-    public void isCollect(String userId,String goodId){
+    public void isCollect(String userId,String goodId,final CallBack callBack){
         ApiUtils.getTqgApi(ApiUrls.tqgApiUrl)
                 .isCollect(userId,goodId)
                 .subscribeOn(Schedulers.io())
@@ -43,6 +43,9 @@ public class WebViewIsCollectPre extends BasePresenter<IWebViewCollectView,AliSd
                     public void onNext(@NonNull InsertCollectBean insertCollectBean) {
                         Log.d("testtaoxiang",insertCollectBean.isError()+"");
                         if(getView()!=null) {
+                            if(callBack!=null){
+                                callBack.initSuccess();
+                            }
                             if(!insertCollectBean.isError())
                                 getView().setCollect();
                             else
@@ -65,5 +68,11 @@ public class WebViewIsCollectPre extends BasePresenter<IWebViewCollectView,AliSd
                         d.dispose();
                     }
                 });
+    }
+
+    public interface CallBack{
+
+        void initSuccess();
+
     }
 }

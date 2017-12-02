@@ -71,6 +71,7 @@ public class CollectActivity extends BaseActivity implements IMyCollectView, IDe
     @BindView(R.id.noCollect)
     ImageView noCollect;
 
+
     @Override
     protected int getContentViewId() {
         return R.layout.activity_collect;
@@ -158,8 +159,11 @@ public class CollectActivity extends BaseActivity implements IMyCollectView, IDe
             noCollect.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
         }else{
-            noCollect.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
+            //Bug1
+            if(noCollect.getVisibility()!=View.VISIBLE) {
+                noCollect.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+            }
         }
         if (page != 1) {
             page = page - 1;

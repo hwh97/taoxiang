@@ -29,7 +29,6 @@
         tools:replace="android:allowBackup">
         <activity
             android:name=".view.activity.SplashActivity"
-            android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBarSplash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,13 +36,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".view.activity.MainActivity"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".view.activity.TmrActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -83,7 +79,9 @@
         <activity android:name=".view.activity.LoginActivity" />
         <activity android:name=".view.activity.ResetPwdActivity" />
         <activity android:name=".view.activity.UserActivity" />
-        <activity android:name=".view.activity.CollectActivity"></activity>
+        <activity android:name=".view.activity.CollectActivity" />
+        <activity android:name=".view.activity.SettingActivity" />
+        <activity android:name=".view.activity.SimpleWebActivity"></activity>
     </application>
 
 </manifest>

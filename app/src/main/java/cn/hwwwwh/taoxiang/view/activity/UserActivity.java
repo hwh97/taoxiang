@@ -77,8 +77,7 @@ public class UserActivity extends BaseActivity {
     TextView tbAccount;
     @BindView(R.id.tb_lv)
     LinearLayout tbLv;
-    @BindView(R.id.logout_btn)
-    Button logout_btn;
+
 
     RLoadingDialog rLoadingDialog;
 
@@ -101,7 +100,7 @@ public class UserActivity extends BaseActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(Color.parseColor("#11B57C"));
+            window.setStatusBarColor(Color.parseColor("#FF6347"));
         }
         toolbarUserinfo.setTitle("个人信息");
         toolbarUserinfo.setTitleTextAppearance(this, R.style.ToolbarTitle);
@@ -455,7 +454,7 @@ public class UserActivity extends BaseActivity {
         });
     }
 
-    @OnClick({R.id.headPicView, R.id.nickNameView, R.id.changePwdView,R.id.logout_btn})
+    @OnClick({R.id.headPicView, R.id.nickNameView, R.id.changePwdView})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.headPicView:
@@ -466,32 +465,6 @@ public class UserActivity extends BaseActivity {
                 break;
             case R.id.changePwdView:
                 openPwdBottomSheet();
-                break;
-            case R.id.logout_btn:
-                if(rLoadingDialog!=null &&!rLoadingDialog.isShowing()){
-                    rLoadingDialog.show();
-                }
-                UMSSDK.logout(new OperationCallback<Void>(){
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        super.onSuccess(aVoid);
-                        if(rLoadingDialog!=null &&rLoadingDialog.isShowing()){
-                            rLoadingDialog.dismiss();
-                        }
-                        ToastUtils.showToast(getApplicationContext(),"退出登陆成功");
-                        Intent intent=new Intent(UserActivity.this,MainActivity.class);
-                        startActivity(intent);
-                    }
-
-                    @Override
-                    public void onFailed(Throwable throwable) {
-                        super.onFailed(throwable);
-                        if(rLoadingDialog!=null &&rLoadingDialog.isShowing()){
-                            rLoadingDialog.dismiss();
-                        }
-                        ToastUtils.showToast(getApplicationContext(),"退出登陆成功");
-                    }
-                });
                 break;
         }
     }

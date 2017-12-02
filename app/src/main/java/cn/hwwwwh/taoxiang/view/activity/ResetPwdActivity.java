@@ -52,8 +52,6 @@ public class ResetPwdActivity extends BaseActivity {
     EditText pwdEt;
     @BindView(R.id.btnResetPwd)
     Button btnResetPwd;
-    @BindView(R.id.btnLinkToLoginScreen)
-    TextView btnLinkToLoginScreen;
 
     private int MAX_COUNT_TIME = 60;
     Disposable mDisposable;
@@ -79,7 +77,7 @@ public class ResetPwdActivity extends BaseActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(this.getResources().getColor(R.color.royalblue));
+            window.setStatusBarColor(this.getResources().getColor(R.color.tomato));
         }
         initResetPwd();
     }
@@ -96,16 +94,13 @@ public class ResetPwdActivity extends BaseActivity {
         ButterKnife.bind(this);
     }
 
-    @OnClick({R.id.sendcode_btn, R.id.btnResetPwd, R.id.btnLinkToLoginScreen})
+    @OnClick({R.id.sendcode_btn, R.id.btnResetPwd})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.sendcode_btn:
                 sendResetCode();
                 break;
             case R.id.btnResetPwd:
-                break;
-            case R.id.btnLinkToLoginScreen:
-                    finish();
                 break;
         }
     }

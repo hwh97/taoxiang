@@ -1,11 +1,14 @@
 package cn.hwwwwh.taoxiang.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
@@ -22,16 +25,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.jakewharton.rxbinding2.view.RxView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.hwwwwh.taoxiang.R;
 import cn.hwwwwh.taoxiang.model.bean.CollectBean;
 import cn.hwwwwh.taoxiang.model.bean.TqgTmrData;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by 97481 on 2017/10/8/ 0008.
@@ -62,22 +69,30 @@ public class CollectAdapter extends RecyclerView.Adapter<CollectAdapter.CollectH
     public void onBindViewHolder(final CollectHolder holder, int position) {
         holder.bindData(data.get(position));
         if(mOnItemClickListener!=null){
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int pos=holder.getLayoutPosition();
-                    mOnItemClickListener.onItemClick(holder.itemView,pos,data.get(pos).getCollect_coupon_link(),
-                            String.valueOf(data.get(pos).getCollect_goods_id()),data.get(pos).isInvalid());
-                }
-            });
+            RxView.clicks(holder.itemView)
+                    .throttleFirst(1, TimeUnit.SECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<Object>() {
+                        @Override
+                        public void accept(Object o) throws Exception {
+                            int pos=holder.getLayoutPosition();
+                            mOnItemClickListener.onItemClick(holder.itemView,pos,data.get(pos).getCollect_coupon_link(),
+                                    String.valueOf(data.get(pos).getCollect_goods_id()),data.get(pos).isInvalid());
+                        }
+                    });
 
-            holder.cancel_rl.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int pos=holder.getLayoutPosition();
-                    mOnItemClickListener.onCancelRlClick(holder.cancel_rl,pos,String.valueOf(data.get(pos).getCollect_goods_id()),data.get(pos).isInvalid());
-                }
-            });
+            RxView.clicks(holder.cancel_rl)
+                    .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<Object>() {
+                        @Override
+                        public void accept(Object o) throws Exception {
+                            int pos=holder.getLayoutPosition();
+                            mOnItemClickListener.onCancelRlClick(holder.cancel_rl,pos,String.valueOf(data.get(pos).getCollect_goods_id()),data.get(pos).isInvalid());
+                        }
+                    });
         }
 
     }
@@ -164,7 +179,17 @@ public class CollectAdapter extends RecyclerView.Adapter<CollectAdapter.CollectH
 
 
         public void bindData(CollectBean.CollectDataBean collectDataBean) {
-            Glide.with(context).load(collectDataBean.getCollect_goods_pic()).placeholder(R.drawable.loadpic).into(collect_pic);
+            SharedPreferences sharedPreferences=context.getSharedPreferences("setting",Context.MODE_PRIVATE);
+            boolean wifi_switch = sharedPreferences.getBoolean("wifi_switch", true);
+            if(!wifi_switch) {
+                Glide.with(context).load(collectDataBean.getCollect_goods_pic()).placeholder(R.drawable.loadpic).into(collect_pic);
+            }else{
+                if(isWifi(context))
+                    Glide.with(context).load(collectDataBean.getCollect_goods_pic()).placeholder(R.drawable.loadpic).into(collect_pic);
+                else
+                    Glide.with(context).load(collectDataBean.getCollect_goods_pic()+"_300x300.jpg").placeholder(R.drawable.loadpic).into(collect_pic);
+            }
+            //Glide.with(context).load(collectDataBean.getCollect_goods_pic()).placeholder(R.drawable.loadpic).into(collect_pic);
             cardView.setRadius(8);//设置图片圆角的半径大小
             cardView.setCardElevation(8);//设置阴影部分大小
             cardView.setContentPadding(5, 5, 5, 5);//设置图片距离阴影大小
@@ -207,6 +232,15 @@ public class CollectAdapter extends RecyclerView.Adapter<CollectAdapter.CollectH
             Date date = new Date(lt*1000L);
             res = simpleDateFormat.format(date);
             return res;
+        }
+
+        private boolean isWifi(Context mContext) {
+            ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
+            if (activeNetInfo != null && activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                return true;
+            }
+            return false;
         }
 
     }

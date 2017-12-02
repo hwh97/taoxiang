@@ -9,7 +9,7 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/resetpwd_toolbar"
         android:title="注册"
-        android:background="#4169E1"
+        android:background="#FF6347"
         android:layout_width="match_parent"
         android:layout_height="50dp"/>
 
@@ -70,7 +70,7 @@
                 android:text="发送"
                 android:textSize="15sp"
                 android:layout_alignParentRight="true"
-                android:background="#4169E1"
+                android:background="#FF6347"
                 android:layout_width="80dp"
                 android:layout_height="match_parent" />
         </RelativeLayout>
@@ -159,7 +159,7 @@
             android:id="@+id/btnResetPwd"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="#4169E1"
+            android:background="#FF6347"
             android:text="重置密码"
             android:textColor="#fff"
             android:layout_marginLeft="20dp"
@@ -167,16 +167,6 @@
             android:layout_below="@+id/shuru3"
             android:layout_marginTop="28dp"
             />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="想起来了？返回登录"
-            android:textColor="#4169E1"
-            android:id="@+id/btnLinkToLoginScreen"
-            android:layout_marginTop="35dp"
-            android:layout_below="@+id/btnResetPwd"
-            android:layout_centerHorizontal="true" />
 
     </RelativeLayout>
 </LinearLayout>

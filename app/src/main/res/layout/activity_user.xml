@@ -14,7 +14,7 @@
             android:id="@+id/toolbar_userinfo"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/line_tab">
+            android:background="@color/tomato">
         </android.support.v7.widget.Toolbar>
 
         <LinearLayout
@@ -252,23 +252,6 @@
             </LinearLayout>
 
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:clickable="true"
-            android:background="?android:attr/selectableItemBackground"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_margin="18dp"
-            android:layout_height="48dp">
-            <Button
-                android:id="@+id/logout_btn"
-                android:text="退出登陆"
-                android:background="@color/orangered"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
         </LinearLayout>
 
     </LinearLayout>

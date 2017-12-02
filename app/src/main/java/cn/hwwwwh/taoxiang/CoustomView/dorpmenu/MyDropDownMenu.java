@@ -283,8 +283,11 @@ public class MyDropDownMenu extends LinearLayout {
     }
 
     private String dealCryText(String text) {
-        int begin = text.indexOf("(");
-        return text.substring(0, begin);
+        if(text.contains("(")) {
+            int begin = text.indexOf("(");
+            return text.substring(0, begin);
+        }
+        return  text;
     }
 
     public void refreshGridItem(int cryPos,String[] arr){
