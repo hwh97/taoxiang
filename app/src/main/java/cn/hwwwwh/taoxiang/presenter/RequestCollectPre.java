@@ -3,6 +3,8 @@ package cn.hwwwwh.taoxiang.presenter;
 import android.util.Log;
 import android.view.View;
 
+import com.trello.rxlifecycle2.RxLifecycle;
+
 import cn.hwwwwh.taoxiang.api.ApiUrls;
 import cn.hwwwwh.taoxiang.api.ApiUtils;
 import cn.hwwwwh.taoxiang.base.BaseActivity;
@@ -43,10 +45,10 @@ public class RequestCollectPre extends BasePresenter<IRequestCollectView,BaseAct
                     public void onNext(@NonNull InsertCollectBean insertCollectBean) {
                         if(getView()!=null) {
                            if (!insertCollectBean.isError()){
-                               Log.d("testtaoxiang",insertCollectBean.getSuccess_msg());
+                               //Log.d("testtaoxiang",insertCollectBean.getSuccess_msg());
                                getView().requestSuccess(insertCollectBean.getSuccess_msg(),view,pos);
                            }else
-                               getView().requestFail("网络出错" + insertCollectBean.getError_msg());
+                               getView().requestFail("网络出错" );
                         }
                         onComplete();
                     }
@@ -54,8 +56,8 @@ public class RequestCollectPre extends BasePresenter<IRequestCollectView,BaseAct
                     @Override
                     public void onError(@NonNull Throwable e) {
                         if(getView()!=null) {
-                            getView().requestFail("网络出错" + e.getMessage());
-                            Log.d("testtaoxiang",e.getMessage());
+                            getView().requestFail("网络出错");
+                           // Log.d("testtaoxiang",e.getMessage());
                         }
                         onComplete();
                     }

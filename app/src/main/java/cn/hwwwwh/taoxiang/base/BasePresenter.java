@@ -160,4 +160,5 @@ public class BasePresenter<V, T> implements LifeCycleListener {
         detachView();
         detachActivity();
     }
+
 }

@@ -506,4 +506,5 @@ public class UserActivity extends BaseActivity {
             });
         }
     }
+
 }

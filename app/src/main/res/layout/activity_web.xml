@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_wb"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/tomato">
+        <!--<TextView-->
+            <!--android:id="@+id/web_title"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:textSize="18sp"-->
+            <!--android:text="购买"-->
+            <!--android:textStyle="normal"-->
+            <!--android:textColor="#ffffff"-->
+            <!--android:textIsSelectable="false" />-->
+    </android.support.v7.widget.Toolbar>
+
+    <WebView
+        android:id="@+id/webView"
+        android:layout_marginTop="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:layout_marginTop="49dp"
+        android:id="@+id/progressBar" />
+</FrameLayout>

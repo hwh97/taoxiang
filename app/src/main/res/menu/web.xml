@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+<!--    <item android:id="@+id/action_coupon"
+        android:title="优惠券"
+        android:icon="@drawable/ic_coupon"
+        app:showAsAction="ifRoom"/>-->
+    <item android:id="@+id/action_coupon"
+        android:title="前往商品"
+        android:icon="@drawable/ic_shop"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/action_collect"
+        android:title="收藏"
+        android:icon="@drawable/ic_favourites_filled_border_star_white"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/action_refresh"
+        android:title="刷新"
+        android:icon="@drawable/ic_refresh_black_24dp"
+        app:showAsAction="ifRoom"/>
+</menu>

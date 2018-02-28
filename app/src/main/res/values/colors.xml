@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
     <color name="green_11B57C">#11B57C</color>
     <color name="black_333333">#333333</color>
     <color name="line_DDDDDD">#DDDDDD</color>
     <color name="line_tab">#11B57C</color>
     <color name="reveal_color">#1b000000</color>
     <color name="reveal_color_ither">#BCEE68</color>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
     <color name="bg_color">#EDEDED</color>
     <color name="contents_text">#ff000000</color>
     <color name="encode_view">#ffffffff</color>
