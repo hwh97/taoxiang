@@ -7,7 +7,6 @@ import cn.hwwwwh.taoxiang.dagger.module.PresenterModule;
 import cn.hwwwwh.taoxiang.view.activity.AliSdkWebViewProxyActivity;
 import cn.hwwwwh.taoxiang.view.activity.CollectActivity;
 import cn.hwwwwh.taoxiang.view.activity.MainActivity;
-import cn.hwwwwh.taoxiang.view.activity.TmrActivity;
 import dagger.Component;
 
 /**
@@ -28,8 +27,6 @@ public interface PresenterComponent {
      */
 
     void inject( MainActivity activity);
-
-    void inject(TmrActivity activity);
 
     void inject(AliSdkWebViewProxyActivity activity);
 

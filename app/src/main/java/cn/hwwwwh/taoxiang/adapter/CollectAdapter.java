@@ -36,7 +36,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.hwwwwh.taoxiang.R;
 import cn.hwwwwh.taoxiang.model.bean.CollectBean;
-import cn.hwwwwh.taoxiang.model.bean.TqgTmrData;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 

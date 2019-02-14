@@ -41,9 +41,6 @@
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".view.activity.TmrActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".view.activity.AliSdkWebViewProxyActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 

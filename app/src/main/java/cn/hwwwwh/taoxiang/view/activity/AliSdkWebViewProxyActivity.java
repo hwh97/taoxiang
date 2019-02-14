@@ -28,7 +28,6 @@ import com.alibaba.baichuan.android.trade.page.AlibcPage;
 import com.alibaba.baichuan.trade.biz.core.taoke.AlibcTaokeParams;
 import com.jakewharton.rxbinding2.support.v7.widget.RxToolbar;
 import com.jakewharton.rxbinding2.view.RxMenuItem;
-import com.jakewharton.rxbinding2.view.RxView;
 import com.mob.ums.UMSSDK;
 
 import java.util.HashMap;
@@ -49,7 +48,6 @@ import cn.hwwwwh.taoxiang.presenter.WebViewIsCollectPre;
 import cn.hwwwwh.taoxiang.utils.ToastUtils;
 import cn.hwwwwh.taoxiang.view.iface.IRequestCollectView;
 import cn.hwwwwh.taoxiang.view.iface.IWebViewCollectView;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
